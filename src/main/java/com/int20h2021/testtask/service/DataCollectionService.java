@@ -18,6 +18,10 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class DataCollectionService {
+    private static final int METRO_ID = 48215611;
+    private static final int ECO_MARKET_ID = 48280214;
+    private static final int NOVUS_ID = 48201070;
+
     private final RestTemplate restTemplate;
 
     public RozetkaResponse getRozetkaData() {
@@ -26,14 +30,18 @@ public class DataCollectionService {
     }
 
     public ZakazResponse getMetroData() {
-        return performZakazRequest(48215611);
+        return performZakazRequest(METRO_ID);
     }
 
     public ZakazResponse getEcoMarketData() {
-        return performZakazRequest(48280214);
+        return performZakazRequest(ECO_MARKET_ID);
     }
 
-    private ZakazResponse performZakazRequest(long storeId) {
+    public ZakazResponse getNovusData() {
+        return performZakazRequest(NOVUS_ID);
+    }
+
+    private ZakazResponse performZakazRequest(int storeId) {
         String url = "https://stores-api.zakaz.ua/stores/{storeId}/products/search/?q=крупа+гречана";
 
         HttpHeaders headers = new HttpHeaders();
@@ -59,17 +67,21 @@ public class DataCollectionService {
         }
 
         ZakazResponse metroData = getMetroData();
-        Result[] metroResults = metroData.getResults();
-        for (Result result : metroResults) {
-            items.add(result.toItem());
-        }
+        addZakazItems(metroData, items);
 
         ZakazResponse ecoMarketData = getEcoMarketData();
-        Result[] ecoMarketResults = ecoMarketData.getResults();
-        for (Result result : ecoMarketResults) {
-            items.add(result.toItem());
-        }
+        addZakazItems(ecoMarketData, items);
+
+        ZakazResponse novusData = getNovusData();
+        addZakazItems(novusData, items);
 
         return new Items(items.toArray(new Item[0]));
+    }
+
+    private void addZakazItems(ZakazResponse zakazResponse, List<Item> items) {
+        Result[] results = zakazResponse.getResults();
+        for (Result result : results) {
+            items.add(result.toItem());
+        }
     }
 }
