@@ -63,25 +63,25 @@ public class DataCollectionService {
         RozetkaResponse rozetkaData = getRozetkaData();
         Good[] goods = rozetkaData.getData().getGoods();
         for (Good good : goods) {
-            items.add(good.toItem());
+            items.add(good.toItem("Rozetka"));
         }
 
         ZakazResponse metroData = getMetroData();
-        addZakazItems(metroData, items);
+        addZakazItems(metroData, items, "Metro");
 
         ZakazResponse ecoMarketData = getEcoMarketData();
-        addZakazItems(ecoMarketData, items);
+        addZakazItems(ecoMarketData, items, "EcoMarket");
 
         ZakazResponse novusData = getNovusData();
-        addZakazItems(novusData, items);
+        addZakazItems(novusData, items, "Novus");
 
         return new Items(items.toArray(new Item[0]));
     }
 
-    private void addZakazItems(ZakazResponse zakazResponse, List<Item> items) {
+    private void addZakazItems(ZakazResponse zakazResponse, List<Item> items, String store) {
         Result[] results = zakazResponse.getResults();
         for (Result result : results) {
-            items.add(result.toItem());
+            items.add(result.toItem(store));
         }
     }
 }

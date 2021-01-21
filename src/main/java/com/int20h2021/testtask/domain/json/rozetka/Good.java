@@ -18,7 +18,7 @@ public class Good extends Transformable implements Serializable {
     private float price;
 
     @Override
-    public Item toItem() {
-        return new Item(id, title, href, img, price);
+    public Item toItem(String store) {
+        return new Item(id, title, href, img, price, store);
     }
 }

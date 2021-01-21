@@ -26,7 +26,7 @@ public class Result extends Transformable implements Serializable {
     }
 
     @Override
-    public Item toItem() {
-        return new Item(id, title, href, this.getImg(), this.getPrice());
+    public Item toItem(String store) {
+        return new Item(id, title, href, this.getImg(), this.getPrice(), store);
     }
 }
