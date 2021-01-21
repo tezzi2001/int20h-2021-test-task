@@ -17,7 +17,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class DataCollectionService {
+public class BuckwheatDataCollectionService {
     private static final int METRO_ID = 48215611;
     private static final int ECO_MARKET_ID = 48280214;
     private static final int NOVUS_ID = 48201070;
