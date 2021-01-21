@@ -19,10 +19,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.int20h2021.testtask.constant.Store.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,9 +34,6 @@ public class BuckwheatDataCollectionService {
 
     private static final String PROM_REQUEST_BODY_FILE = "promRequestBody.json";
     private static final String JSON;
-    private static final int METRO_ID = 48215611;
-    private static final int ECO_MARKET_ID = 48280214;
-    private static final int NOVUS_ID = 48201070;
 
     private final RestTemplate restTemplate;
 
@@ -52,8 +50,7 @@ public class BuckwheatDataCollectionService {
     }
 
     public RozetkaResponse getRozetkaData() {
-        String url = "https://search.rozetka.com.ua/search/api/v4/?front-type=xl&text=крупа+гречана&lang=ua";
-        return this.restTemplate.getForObject(url, RozetkaResponse.class);
+        return this.restTemplate.getForObject(ROZETKA_REQUEST_URL, RozetkaResponse.class);
     }
 
     public ZakazResponse getMetroData() {
@@ -61,7 +58,7 @@ public class BuckwheatDataCollectionService {
     }
 
     public ZakazResponse getEcoMarketData() {
-        return performZakazRequest(ECO_MARKET_ID);
+        return performZakazRequest(ECOMARKET_ID);
     }
 
     public ZakazResponse getNovusData() {
@@ -69,8 +66,6 @@ public class BuckwheatDataCollectionService {
     }
 
     public PromResponse getPromData() {
-        String url = "https://prom.ua/graphql";
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("accept-language", "en,uk-UA;q=0.9,uk;q=0.8,ru;q=0.7,en-US;q=0.6");
@@ -78,20 +73,18 @@ public class BuckwheatDataCollectionService {
 
         HttpEntity<String> entity = new HttpEntity<>(JSON, headers);
 
-        ResponseEntity<PromResponse[]> response = this.restTemplate.postForEntity(url, entity, PromResponse[].class);
+        ResponseEntity<PromResponse[]> response = this.restTemplate.postForEntity(PROM_REQUEST_URL, entity, PromResponse[].class);
 
         return response.getBody()[2];
     }
 
     private ZakazResponse performZakazRequest(int storeId) {
-        String url = "https://stores-api.zakaz.ua/stores/{storeId}/products/search/?q=крупа+гречана";
-
         HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("accept-language", "uk");
         HttpEntity request = new HttpEntity(headers);
 
-        ResponseEntity<ZakazResponse> response = this.restTemplate.exchange(url, HttpMethod.GET, request, ZakazResponse.class, storeId);
+        ResponseEntity<ZakazResponse> response = this.restTemplate.exchange(ZAKAZ_REQUEST_URL, HttpMethod.GET, request, ZakazResponse.class, storeId);
         if(response.getStatusCode() == HttpStatus.OK) {
             return response.getBody();
         } else {
@@ -105,23 +98,23 @@ public class BuckwheatDataCollectionService {
         RozetkaResponse rozetkaData = getRozetkaData();
         Good[] goods = rozetkaData.getData().getGoods();
         for (Good good : goods) {
-            items.add(good.toItem("Rozetka"));
+            items.add(good.toItem(ROZETKA));
         }
 
         ZakazResponse metroData = getMetroData();
-        addZakazItems(metroData, items, "Metro");
+        addZakazItems(metroData, items, METRO);
 
         ZakazResponse ecoMarketData = getEcoMarketData();
-        addZakazItems(ecoMarketData, items, "EcoMarket");
+        addZakazItems(ecoMarketData, items, ECOMARKET);
 
         ZakazResponse novusData = getNovusData();
-        addZakazItems(novusData, items, "Novus");
+        addZakazItems(novusData, items, NOVUS);
 
         PromResponse promData = getPromData();
         Data data = promData.getData();
         Product[] productList = data.getProductList();
         for (Product product : productList) {
-            items.add(product.toItem("Prom"));
+            items.add(product.toItem(PROM));
         }
 
         return new Items(items.toArray(new Item[0]));
