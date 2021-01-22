@@ -17,4 +17,6 @@ public final class Store {
     public static final String ZAKAZ_REQUEST_URL = "https://stores-api.zakaz.ua/stores/{storeId}/products/search/?q=крупа+гречана";
     public static final String ROZETKA_REQUEST_URL = "https://search.rozetka.com.ua/search/api/v4/?front-type=xl&text=крупа+гречана&lang=ua";
     public static final String PROM_REQUEST_URL = "https://prom.ua/graphql";
+
+    public static final String ROZETKA_COMMON_REQUEST_URL = "https://search.rozetka.com.ua/ua/search/api/v4/?front-type=xl&text={query}&lang=ua";
 }
