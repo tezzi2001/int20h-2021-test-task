@@ -9,44 +9,65 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-@Service
+import static com.int20h2021.testtask.constant.Filter.STORE;
+
+@Service("buckwheatItemsProvidingService")
 @RequiredArgsConstructor
-public class BuckwheatDataCollectionService {
+public class BuckwheatDataProvidingService implements BuckwheatDataProvider {
     private static final String ASCENDING = "asc"; //by default
     private static final String DESCENDING = "desc";
 
     private final ItemRepository itemRepository;
 
     public Items getData(int offset, int limit) {
-        Pageable pageable = new OffsetBasedPageRequest(offset, limit);
-        Page<Item> pages = itemRepository.findAll(pageable);
-        return toItems(pages);
+        return getData(offset, limit, null, "");
     }
 
     public Items getData(int offset, int limit, String sortBy) {
-        Pageable pageable = new OffsetBasedPageRequest(offset, limit, Sort.by(sortBy));
-        Page<Item> pages = itemRepository.findAll(pageable);
-        return toItems(pages);
+        return getData(offset, limit, sortBy, "");
     }
 
+    @Override
     public Items getData(int offset, int limit, String sortBy, String sortDir) {
-        switch (sortDir) {
-            case ASCENDING:
-                return getData(offset, limit, Sort.by(sortBy).ascending());
-            case DESCENDING:
-                return getData(offset, limit, Sort.by(sortBy).descending());
-            default: return getData(offset, limit, Sort.by(sortBy));
+        return getData(offset, limit, getSort(sortBy, sortDir));
+    }
+
+    @Override
+    public Items getFilteredData(int offset, int limit, String sortBy, String sortDir, MultiValueMap<String, String> filters) {
+        Pageable pageable = new OffsetBasedPageRequest(offset, limit, getSort(sortBy, sortDir));
+        List<Item> pages;
+
+        if (filters.containsKey(STORE)) {
+            pages = itemRepository.findByStoreIn(filters.get(STORE), pageable);
+            return toItems(pages);
         }
+        return null;
     }
 
     private Items getData(int offset, int limit, Sort sort) {
         Pageable pageable = new OffsetBasedPageRequest(offset, limit, sort);
         Page<Item> pages = itemRepository.findAll(pageable);
         return toItems(pages);
+    }
+
+    private Sort getSort(String sortBy, String sortDir) {
+        Sort sort =
+                sortBy == null ?
+                Sort.unsorted() :
+                Sort.by(sortBy);
+
+        switch (sortDir) {
+            case ASCENDING:
+                return sort.ascending();
+            case DESCENDING:
+                return sort.descending();
+            default:
+                return sort;
+        }
     }
 
     private Items toItems(Iterable<Item> items) {
