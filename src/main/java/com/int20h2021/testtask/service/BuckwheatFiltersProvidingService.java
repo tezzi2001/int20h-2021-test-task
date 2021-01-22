@@ -2,7 +2,7 @@ package com.int20h2021.testtask.service;
 
 import com.int20h2021.testtask.domain.json.common.Filter;
 import com.int20h2021.testtask.domain.json.common.FilterOption;
-import com.int20h2021.testtask.domain.json.common.Items;
+import com.int20h2021.testtask.domain.json.common.Data;
 import com.int20h2021.testtask.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,22 +23,22 @@ public class BuckwheatFiltersProvidingService implements BuckwheatDataProvider {
     private final ItemRepository itemRepository;
 
     @Override
-    public Items getData(int offset, int limit, String sortBy, String sortDir) {
-        Items items = buckwheatItemsProvidingService.getData(offset, limit, sortBy, sortDir);
-        addStoreFilterOption(items);
+    public Data getData(int offset, int limit, String sortBy, String sortDir) {
+        Data data = buckwheatItemsProvidingService.getData(offset, limit, sortBy, sortDir);
+        addStoreFilterOption(data);
 
-        return items;
+        return data;
     }
 
     @Override
-    public Items getFilteredData(int offset, int limit, String sortBy, String sortDir, MultiValueMap<String, String> filters) {
-        Items items = buckwheatItemsProvidingService.getFilteredData(offset, limit, sortBy, sortDir, filters);
-        addStoreFilterOption(items);
+    public Data getFilteredData(int offset, int limit, String sortBy, String sortDir, MultiValueMap<String, String> filters) {
+        Data data = buckwheatItemsProvidingService.getFilteredData(offset, limit, sortBy, sortDir, filters);
+        addStoreFilterOption(data);
 
-        return items;
+        return data;
     }
 
-    private void addStoreFilterOption(Items items) {
+    private void addStoreFilterOption(Data data) {
         List<FilterOption> filterOptions = new ArrayList<>(5);
         addFilterOptionIfStoreExists(ROZETKA, filterOptions);
         addFilterOptionIfStoreExists(ECOMARKET, filterOptions);
@@ -47,7 +47,7 @@ public class BuckwheatFiltersProvidingService implements BuckwheatDataProvider {
         addFilterOptionIfStoreExists(PROM, filterOptions);
 
         Filter filter1 = new Filter(STORE, "Магазин", filterOptions.toArray(new FilterOption[0]));
-        items.setFilters(new Filter[]{filter1});
+        data.setFilters(new Filter[]{filter1});
     }
 
     private void addFilterOptionIfStoreExists(String store, List<FilterOption> filterOptions) {

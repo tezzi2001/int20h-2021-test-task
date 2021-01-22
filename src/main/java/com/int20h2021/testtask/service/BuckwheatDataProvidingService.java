@@ -2,7 +2,7 @@ package com.int20h2021.testtask.service;
 
 import com.int20h2021.testtask.domain.OffsetBasedPageRequest;
 import com.int20h2021.testtask.domain.json.common.Item;
-import com.int20h2021.testtask.domain.json.common.Items;
+import com.int20h2021.testtask.domain.json.common.Data;
 import com.int20h2021.testtask.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,7 +11,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.int20h2021.testtask.constant.Filter.STORE;
 
@@ -23,21 +24,21 @@ public class BuckwheatDataProvidingService implements BuckwheatDataProvider {
 
     private final ItemRepository itemRepository;
 
-    public Items getData(int offset, int limit) {
+    public Data getData(int offset, int limit) {
         return getData(offset, limit, null, "");
     }
 
-    public Items getData(int offset, int limit, String sortBy) {
+    public Data getData(int offset, int limit, String sortBy) {
         return getData(offset, limit, sortBy, "");
     }
 
     @Override
-    public Items getData(int offset, int limit, String sortBy, String sortDir) {
+    public Data getData(int offset, int limit, String sortBy, String sortDir) {
         return getData(offset, limit, getSort(sortBy, sortDir));
     }
 
     @Override
-    public Items getFilteredData(int offset, int limit, String sortBy, String sortDir, MultiValueMap<String, String> filters) {
+    public Data getFilteredData(int offset, int limit, String sortBy, String sortDir, MultiValueMap<String, String> filters) {
         Pageable pageable = new OffsetBasedPageRequest(offset, limit, getSort(sortBy, sortDir));
         List<Item> pages;
 
@@ -48,7 +49,7 @@ public class BuckwheatDataProvidingService implements BuckwheatDataProvider {
         return null;
     }
 
-    private Items getData(int offset, int limit, Sort sort) {
+    private Data getData(int offset, int limit, Sort sort) {
         Pageable pageable = new OffsetBasedPageRequest(offset, limit, sort);
         Page<Item> pages = itemRepository.findAll(pageable);
         return toItems(pages);
@@ -70,10 +71,10 @@ public class BuckwheatDataProvidingService implements BuckwheatDataProvider {
         }
     }
 
-    private Items toItems(Iterable<Item> items) {
+    private Data toItems(Iterable<Item> items) {
         List<Item> itemList = new ArrayList<>();
         items.forEach(itemList::add);
         Item[] itemArray = itemList.toArray(new Item[0]);
-        return new Items(itemArray);
+        return new Data(itemArray);
     }
 }

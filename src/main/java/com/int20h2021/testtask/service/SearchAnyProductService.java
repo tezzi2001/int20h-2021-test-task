@@ -1,10 +1,9 @@
 package com.int20h2021.testtask.service;
 
 import com.int20h2021.testtask.domain.json.common.Item;
-import com.int20h2021.testtask.domain.json.common.Items;
+import com.int20h2021.testtask.domain.json.common.Data;
 import com.int20h2021.testtask.domain.json.rozetka.RozetkaResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -19,17 +18,17 @@ public class SearchAnyProductService {
     private final RestTemplate restTemplate;
     private final NormalizrJsonService normalizrJsonService;
 
-    public Items getRozetkaResponse(String query) {
+    public Data getRozetkaResponse(String query) {
         RozetkaResponse response = restTemplate.getForObject(ROZETKA_COMMON_REQUEST_URL, RozetkaResponse.class, query);
         if (response == null || !response.hasPayload()) {
-            return new Items(null);
+            return new Data(null);
         }
         List<Item> itemsList = normalizrJsonService.normalize(response, ROZETKA);
         return toItemsObj(itemsList);
     }
 
-    private Items toItemsObj(List<Item> items) {
+    private Data toItemsObj(List<Item> items) {
         Item[] itemsArray = items.toArray(new Item[0]);
-        return new Items(itemsArray);
+        return new Data(itemsArray);
     }
 }

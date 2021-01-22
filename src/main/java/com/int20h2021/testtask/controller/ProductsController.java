@@ -1,6 +1,6 @@
 package com.int20h2021.testtask.controller;
 
-import com.int20h2021.testtask.domain.json.common.Items;
+import com.int20h2021.testtask.domain.json.common.Data;
 import com.int20h2021.testtask.service.BuckwheatDataProvider;
 import com.int20h2021.testtask.service.SearchAnyProductService;
 import lombok.AllArgsConstructor;
@@ -20,12 +20,12 @@ public class ProductsController {
     private final SearchAnyProductService searchAnyProductService;
 
     @GetMapping("/search")
-    public Items search(@RequestParam(required = false) String query,
-                        @RequestParam(required = false, defaultValue = "0") int offset,
-                        @RequestParam(required = false, defaultValue = "20") int limit,
-                        @RequestParam(required = false) String sortBy,
-                        @RequestParam(required = false, defaultValue = "") String sortDir,
-                        @RequestParam MultiValueMap<String, String> filters) {
+    public Data search(@RequestParam(required = false) String query,
+                       @RequestParam(required = false, defaultValue = "0") int offset,
+                       @RequestParam(required = false, defaultValue = "20") int limit,
+                       @RequestParam(required = false) String sortBy,
+                       @RequestParam(required = false, defaultValue = "") String sortDir,
+                       @RequestParam MultiValueMap<String, String> filters) {
         if (query == null) {
             if (filters.isEmpty()) {
                 return buckwheatDataProvidingService.getData(offset, limit, sortBy, sortDir);

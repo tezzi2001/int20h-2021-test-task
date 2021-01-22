@@ -1,7 +1,6 @@
 package com.int20h2021.testtask.service;
 
 import com.int20h2021.testtask.domain.json.common.Item;
-
 import com.int20h2021.testtask.domain.json.prom.PromResponse;
 import com.int20h2021.testtask.domain.json.rozetka.RozetkaResponse;
 import com.int20h2021.testtask.domain.json.zakaz.ZakazResponse;
@@ -19,9 +18,9 @@ import static com.int20h2021.testtask.constant.Store.*;
 
 @Service
 @RequiredArgsConstructor
-public class BuckwheatDataScanningService {
-    private static final String PROM_REQUEST_BODY_FILE = "src/main/resources/promRequestBody.json";
-    private static final String JSON;
+public class BuckwheatDataCollectionService {
+    private static final String PROM_REQUEST_JSON_NAME = "src/main/resources/promRequestBody.json";
+    private static final String PROM_REQUEST_JSON;
 
     private final RestTemplate restTemplate;
     private final NormalizrJsonService normalizrJsonService;
@@ -29,18 +28,18 @@ public class BuckwheatDataScanningService {
     private final ItemRepository itemRepository;
 
     static {
-        JSON = init();
+        PROM_REQUEST_JSON = init();
     }
 
     private static String init() {
-        try (Scanner scanner = new Scanner(new File(PROM_REQUEST_BODY_FILE)).useDelimiter("\\A");) {
+        try (Scanner scanner = new Scanner(new File(PROM_REQUEST_JSON_NAME)).useDelimiter("\\A");) {
             return scanner.hasNext() ? scanner.next() : "";
         } catch (FileNotFoundException e) {
-            throw new RuntimeException("Can not read JSON file with request for prom.ua");
+            throw new UnsupportedOperationException("Can not read PROM_REQUEST_JSON file with request for prom.ua");
         }
     }
 
-    public boolean scan() {
+    public boolean collect() {
         List<Item> items = new ArrayList<>();
 
         items.addAll(normalizrJsonService.normalize(getEcoMarketData(), ECOMARKET));
@@ -84,7 +83,7 @@ public class BuckwheatDataScanningService {
         headers.setAcceptLanguage(expectedRanges);
         headers.set("x-language", "uk");
 
-        HttpEntity<String> entity = new HttpEntity<>(JSON, headers);
+        HttpEntity<String> entity = new HttpEntity<>(PROM_REQUEST_JSON, headers);
 
         ResponseEntity<PromResponse[]> response = this.restTemplate.postForEntity(PROM_REQUEST_URL, entity, PromResponse[].class);
         return response.getBody()[2];
