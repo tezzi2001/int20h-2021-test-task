@@ -19,9 +19,11 @@ public class ProductsController {
     @GetMapping("/search")
     public Items search(@RequestParam(required = false) String query,
                         @RequestParam(required = false, defaultValue = "0") int offset,
-                        @RequestParam(required = false, defaultValue = "20") int limit) {
+                        @RequestParam(required = false, defaultValue = "20") int limit,
+                        @RequestParam(required = false, defaultValue = "") String sortBy,
+                        @RequestParam(required = false, defaultValue = "") String sortDir) {
         return query == null ?
-                buckwheatDataCollectionService.getData(offset, limit) :
+                buckwheatDataCollectionService.getData(offset, limit, sortBy, sortDir) :
                 searchAnyProductService.getRozetkaResponse(query);
     }
 }
