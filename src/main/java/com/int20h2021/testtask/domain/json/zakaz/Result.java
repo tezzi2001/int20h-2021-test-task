@@ -16,6 +16,8 @@ public class Result extends Transformable implements Serializable {
     @JsonProperty("web_url") private String href;
     private Image img;
     private float price;
+    private int weight;
+    private Producer producer;
 
     public String getImg() {
         return img.getImg();
@@ -27,6 +29,6 @@ public class Result extends Transformable implements Serializable {
 
     @Override
     public Item toItem(String store) {
-        return new Item(id, title, href, this.getImg(), this.getPrice(), store);
+        return new Item(id, title, href, getImg(), getPrice(), store, weight, producer.getTrademark());
     }
 }
