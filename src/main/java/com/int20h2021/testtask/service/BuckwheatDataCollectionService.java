@@ -1,8 +1,6 @@
 package com.int20h2021.testtask.service;
 
 import com.int20h2021.testtask.domain.json.common.Item;
-import com.int20h2021.testtask.domain.json.prom.PromResponse;
-import com.int20h2021.testtask.domain.json.rozetka.RozetkaResponse;
 import com.int20h2021.testtask.domain.json.zakaz.ZakazResponse;
 import com.int20h2021.testtask.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,8 +8,6 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.*;
 
 import static com.int20h2021.testtask.constant.Store.*;
@@ -19,25 +15,10 @@ import static com.int20h2021.testtask.constant.Store.*;
 @Service
 @RequiredArgsConstructor
 public class BuckwheatDataCollectionService {
-    private static final String PROM_REQUEST_JSON_NAME = "src/main/resources/promRequestBody.json";
-    private static final String PROM_REQUEST_JSON;
-
     private final RestTemplate restTemplate;
     private final NormalizrJsonService normalizrJsonService;
 
     private final ItemRepository itemRepository;
-
-    static {
-        PROM_REQUEST_JSON = init();
-    }
-
-    private static String init() {
-        try (Scanner scanner = new Scanner(new File(PROM_REQUEST_JSON_NAME)).useDelimiter("\\A");) {
-            return scanner.hasNext() ? scanner.next() : "";
-        } catch (FileNotFoundException e) {
-            throw new UnsupportedOperationException("Can not read PROM_REQUEST_JSON file with request for prom.ua");
-        }
-    }
 
     public boolean collect() {
         List<Item> items = new ArrayList<>();
@@ -45,17 +26,16 @@ public class BuckwheatDataCollectionService {
         items.addAll(normalizrJsonService.normalize(getEcoMarketData(), ECOMARKET));
         items.addAll(normalizrJsonService.normalize(getMetroData(), METRO));
         items.addAll(normalizrJsonService.normalize(getNovusData(), NOVUS));
-        items.addAll(normalizrJsonService.normalize(getPromData(), PROM));
-        items.addAll(normalizrJsonService.normalize(getRozetkaData(), ROZETKA));
+        items.addAll(normalizrJsonService.normalize(getAshanData(), ASHAN));
+        items.addAll(normalizrJsonService.normalize(getVarusData(), VARUS));
+        items.addAll(normalizrJsonService.normalize(getCityMarketData(), CITYMARKET));
+        items.addAll(normalizrJsonService.normalize(getMegaMarketData(), MEGAMARKET));
+        items.addAll(normalizrJsonService.normalize(getFurshetData(), FURSHET));
 
         itemRepository.deleteAll();
         itemRepository.saveAll(items);
 
         return true;
-    }
-
-    private RozetkaResponse getRozetkaData() {
-        return this.restTemplate.getForObject(ROZETKA_REQUEST_URL, RozetkaResponse.class);
     }
 
     private ZakazResponse getMetroData() {
@@ -70,23 +50,24 @@ public class BuckwheatDataCollectionService {
         return performZakazRequest(NOVUS_ID);
     }
 
-    private PromResponse getPromData() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        List<Locale.LanguageRange> expectedRanges = Arrays.asList(
-                new Locale.LanguageRange("en"),
-                new Locale.LanguageRange("uk-UA", 0.9),
-                new Locale.LanguageRange("uk", 0.8),
-                new Locale.LanguageRange("ru", 0.7),
-                new Locale.LanguageRange("en-US", 0.6)
-        );
-        headers.setAcceptLanguage(expectedRanges);
-        headers.set("x-language", "uk");
+    private ZakazResponse getAshanData() {
+        return performZakazRequest(ASHAN_ID);
+    }
 
-        HttpEntity<String> entity = new HttpEntity<>(PROM_REQUEST_JSON, headers);
+    private ZakazResponse getVarusData() {
+        return performZakazRequest(VARUS_ID);
+    }
 
-        ResponseEntity<PromResponse[]> response = this.restTemplate.postForEntity(PROM_REQUEST_URL, entity, PromResponse[].class);
-        return response.getBody()[2];
+    private ZakazResponse getCityMarketData() {
+        return performZakazRequest(CITYMARKET_ID);
+    }
+
+    private ZakazResponse getMegaMarketData() {
+        return performZakazRequest(MEGAMARKET_ID);
+    }
+
+    private ZakazResponse getFurshetData() {
+        return performZakazRequest(FURSHET_ID);
     }
 
     private ZakazResponse performZakazRequest(int storeId) {

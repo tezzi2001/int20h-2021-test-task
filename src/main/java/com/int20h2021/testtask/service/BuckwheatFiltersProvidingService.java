@@ -40,11 +40,14 @@ public class BuckwheatFiltersProvidingService implements BuckwheatDataProvider {
 
     private void addStoreFilterOption(Data data) {
         List<FilterOption> filterOptions = new ArrayList<>(5);
-        addFilterOptionIfStoreExists(ROZETKA, filterOptions);
         addFilterOptionIfStoreExists(ECOMARKET, filterOptions);
         addFilterOptionIfStoreExists(METRO, filterOptions);
         addFilterOptionIfStoreExists(NOVUS, filterOptions);
-        addFilterOptionIfStoreExists(PROM, filterOptions);
+        addFilterOptionIfStoreExists(ASHAN, filterOptions);
+        addFilterOptionIfStoreExists(VARUS, filterOptions);
+        addFilterOptionIfStoreExists(CITYMARKET, filterOptions);
+        addFilterOptionIfStoreExists(MEGAMARKET, filterOptions);
+        addFilterOptionIfStoreExists(FURSHET, filterOptions);
 
         Filter filter1 = new Filter(STORE, "Магазин", filterOptions.toArray(new FilterOption[0]));
         data.setFilters(new Filter[]{filter1});
