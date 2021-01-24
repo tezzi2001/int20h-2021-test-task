@@ -35,20 +35,20 @@ public class BuckwheatFiltersProvidingService implements BuckwheatDataProvider {
 
     private Filter getStoreFilterOption() {
         List<String> stores = itemRepository.findDistinctStores();
-        List<FilterOption> storeFilterOptions = getFilterOptionsOfColumn(stores);
+        List<FilterOption> storeFilterOptions = getFilterOptionsOfColumn(stores, STORE.getId());
         return new Filter(STORE.getId(), STORE.getName(), storeFilterOptions.toArray(new FilterOption[0]));
     }
 
     private Filter getProducerFilterOption() {
         List<String> producers = itemRepository.findDistinctProducers();
-        List<FilterOption> producerFilterOptions = getFilterOptionsOfColumn(producers);
+        List<FilterOption> producerFilterOptions = getFilterOptionsOfColumn(producers, PRODUCER.getId());
         return new Filter(PRODUCER.getId(), PRODUCER.getName(), producerFilterOptions.toArray(new FilterOption[0]));
     }
 
-    private List<FilterOption> getFilterOptionsOfColumn(List<String> columnValues) {
+    private List<FilterOption> getFilterOptionsOfColumn(List<String> columnValues, String type) {
         List<FilterOption> storeFilterOptions = new ArrayList<>();
         for (String value : columnValues) {
-            storeFilterOptions.add(new FilterOption(value, value));
+            storeFilterOptions.add(new FilterOption(value, value, type));
         }
         return storeFilterOptions;
     }

@@ -2,6 +2,7 @@ package com.int20h2021.testtask.service;
 
 import com.int20h2021.testtask.domain.OffsetBasedPageRequest;
 import com.int20h2021.testtask.domain.json.common.Data;
+import com.int20h2021.testtask.domain.json.common.FilterOption;
 import com.int20h2021.testtask.domain.json.common.Item;
 import com.int20h2021.testtask.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.util.MultiValueMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.int20h2021.testtask.constant.Filters.*;
 
@@ -35,12 +37,14 @@ public class BuckwheatItemsProvidingService implements BuckwheatDataProvider {
         } else {
             List<String> storeFilters;
             List<String> producersFilters;
+            String storeId = STORE.getId();
+            String producerId = PRODUCER.getId();
 
-            storeFilters = filters.containsKey(STORE.getId()) ?
-                    filters.get(STORE.getId()) :
+            storeFilters = filters.containsKey(storeId) ?
+                    getParsedFilters(filters.get(storeId)) :
                     itemRepository.findDistinctStores();
-            producersFilters = filters.containsKey(PRODUCER.getId()) ?
-                    filters.get(PRODUCER.getId()) :
+            producersFilters = filters.containsKey(producerId) ?
+                    getParsedFilters(filters.get(producerId)) :
                     itemRepository.findDistinctProducers();
 
             pages = itemRepository.findByStoreInAndProducerIn(storeFilters, producersFilters, pageable);
@@ -48,6 +52,12 @@ public class BuckwheatItemsProvidingService implements BuckwheatDataProvider {
         }
 
         return toItems(pages, totalCount);
+    }
+
+    List<String> getParsedFilters(List<String> filters) {
+        return filters.stream()
+                .map(f -> f.split(FilterOption.DELIMITER)[0])
+                .collect(Collectors.toList());
     }
 
     private Sort getSort(String sortBy, String sortDir) {
