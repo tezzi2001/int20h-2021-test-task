@@ -15,7 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.int20h2021.testtask.constant.Filters.*;
+import static com.int20h2021.testtask.constant.Filters.PRODUCER;
+import static com.int20h2021.testtask.constant.Filters.STORE;
 
 @Service("buckwheatItemsProvidingService")
 @RequiredArgsConstructor
@@ -24,9 +25,11 @@ public class BuckwheatItemsProvidingService implements BuckwheatDataProvider {
     private static final String DESCENDING = "desc";
 
     private final ItemRepository itemRepository;
+    private final BuckwheatDataUpdateService buckwheatDataUpdateService;
 
     @Override
     public Data getData(int offset, int limit, String sortBy, String sortDir, MultiValueMap<String, String> filters) {
+        checkForUpdate();
         Pageable pageable = new OffsetBasedPageRequest(offset, limit, getSort(sortBy, sortDir));
         Iterable<Item> pages;
         int totalCount;
@@ -54,7 +57,13 @@ public class BuckwheatItemsProvidingService implements BuckwheatDataProvider {
         return toItems(pages, totalCount);
     }
 
-    List<String> getParsedFilters(List<String> filters) {
+    private void checkForUpdate() {
+        if (buckwheatDataUpdateService.needForUpdate()) {
+            buckwheatDataUpdateService.update();
+        }
+    }
+
+    private List<String> getParsedFilters(List<String> filters) {
         return filters.stream()
                 .map(f -> f.split(FilterOption.DELIMITER)[0])
                 .collect(Collectors.toList());

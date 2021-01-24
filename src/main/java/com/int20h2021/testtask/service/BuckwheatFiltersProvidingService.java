@@ -12,7 +12,8 @@ import org.springframework.util.MultiValueMap;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.int20h2021.testtask.constant.Filters.*;
+import static com.int20h2021.testtask.constant.Filters.PRODUCER;
+import static com.int20h2021.testtask.constant.Filters.STORE;
 
 @Service("buckwheatDataProvidingService")
 @RequiredArgsConstructor

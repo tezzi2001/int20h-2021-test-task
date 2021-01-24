@@ -2,7 +2,7 @@ package com.int20h2021.testtask.controller;
 
 import com.int20h2021.testtask.service.BuckwheatDataCollectionService;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ServiceController {
     private final BuckwheatDataCollectionService buckwheatDataCollectionService;
 
-    @PutMapping ("/collect-data")
+    @GetMapping("/collect-data")
     public boolean collectData() {
         return buckwheatDataCollectionService.collect();
     }

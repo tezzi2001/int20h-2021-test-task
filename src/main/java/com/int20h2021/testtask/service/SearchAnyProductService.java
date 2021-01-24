@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
-import static com.int20h2021.testtask.constant.Urls.*;
+import static com.int20h2021.testtask.constant.Urls.ZAKAZ_COMMON_REQUEST_URL;
 
 @Service
 @RequiredArgsConstructor
