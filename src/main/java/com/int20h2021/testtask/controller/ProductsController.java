@@ -26,14 +26,19 @@ public class ProductsController {
                        @RequestParam(required = false) String sortBy,
                        @RequestParam(required = false, defaultValue = "") String sortDir,
                        @RequestParam MultiValueMap<String, String> filters) {
+        deleteNonFilterKeys(filters);
         if (query == null) {
-            if (filters.isEmpty()) {
-                return buckwheatDataProvidingService.getData(offset, limit, sortBy, sortDir);
-            } else {
-                return buckwheatDataProvidingService.getFilteredData(offset, limit, sortBy, sortDir, filters);
-            }
+            return buckwheatDataProvidingService.getData(offset, limit, sortBy, sortDir, filters);
         } else {
             return searchAnyProductService.getRozetkaResponse(query);
         }
+    }
+
+    private void deleteNonFilterKeys(MultiValueMap<String, String> filters) {
+        filters.remove("query");
+        filters.remove("offset");
+        filters.remove("limit");
+        filters.remove("sortBy");
+        filters.remove("sortDir");
     }
 }

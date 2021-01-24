@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
-import javax.persistence.Transient;
 import java.io.Serializable;
 
 @Data
@@ -24,7 +23,6 @@ public class Item implements Serializable {
     private String store;
     private int weight;
     private String producer;
-    @Transient
     private float pricePerKg;
 
     public Item(long id, String title, String href, String img, float price, String store, int weight, String producer) {
@@ -34,23 +32,16 @@ public class Item implements Serializable {
         this.img = img;
         this.price = price;
         this.store = store;
-        this.weight = weight;
-        this.producer = producer;
+        this.weight = weight == 0 ? 1000 : weight;
+        this.producer = producer == null ? "Вагова" : producer;
+        this.pricePerKg = price / this.weight * 1000;
     }
 
-    public int getWeight() {
-        return weight == 0 ?
-                1000 :
-                weight;
+    public void setWeight(int weight) {
+        this.weight = weight == 0 ? 1000 : weight;
     }
 
-    public String getProducer() {
-        return producer == null ?
-                "Вагова" :
-                producer;
-    }
-
-    public float getPricePerKg() {
-        return getPrice() / getWeight() * 1000;
+    public void setProducer(String producer) {
+        this.producer = producer == null ? "Вагова" : producer;
     }
 }

@@ -1,11 +1,10 @@
 package com.int20h2021.testtask.service;
 
 import com.int20h2021.testtask.domain.OffsetBasedPageRequest;
-import com.int20h2021.testtask.domain.json.common.Item;
 import com.int20h2021.testtask.domain.json.common.Data;
+import com.int20h2021.testtask.domain.json.common.Item;
 import com.int20h2021.testtask.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -14,46 +13,40 @@ import org.springframework.util.MultiValueMap;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.int20h2021.testtask.constant.Filter.STORE;
+import static com.int20h2021.testtask.constant.Filters.*;
 
 @Service("buckwheatItemsProvidingService")
 @RequiredArgsConstructor
-public class BuckwheatDataProvidingService implements BuckwheatDataProvider {
+public class BuckwheatItemsProvidingService implements BuckwheatDataProvider {
     private static final String ASCENDING = "asc"; //by default
     private static final String DESCENDING = "desc";
 
     private final ItemRepository itemRepository;
 
-    public Data getData(int offset, int limit) {
-        return getData(offset, limit, null, "");
-    }
-
-    public Data getData(int offset, int limit, String sortBy) {
-        return getData(offset, limit, sortBy, "");
-    }
-
     @Override
-    public Data getData(int offset, int limit, String sortBy, String sortDir) {
-        return getData(offset, limit, getSort(sortBy, sortDir));
-    }
-
-    @Override
-    public Data getFilteredData(int offset, int limit, String sortBy, String sortDir, MultiValueMap<String, String> filters) {
+    public Data getData(int offset, int limit, String sortBy, String sortDir, MultiValueMap<String, String> filters) {
         Pageable pageable = new OffsetBasedPageRequest(offset, limit, getSort(sortBy, sortDir));
-        List<Item> pages;
+        Iterable<Item> pages;
+        int totalCount;
 
-        if (filters.containsKey(STORE)) {
-            pages = itemRepository.findByStoreIn(filters.get(STORE), pageable);
-            int totalCount = itemRepository.countByStoreIn(filters.get(STORE));
-            return toItems(pages, totalCount);
+        if (filters.isEmpty()) {
+            pages = itemRepository.findAll(pageable);
+            totalCount = (int) itemRepository.count();
+        } else {
+            List<String> storeFilters;
+            List<String> producersFilters;
+
+            storeFilters = filters.containsKey(STORE.getId()) ?
+                    filters.get(STORE.getId()) :
+                    itemRepository.findDistinctStores();
+            producersFilters = filters.containsKey(PRODUCER.getId()) ?
+                    filters.get(PRODUCER.getId()) :
+                    itemRepository.findDistinctProducers();
+
+            pages = itemRepository.findByStoreInAndProducerIn(storeFilters, producersFilters, pageable);
+            totalCount = itemRepository.countByStoreInAndProducerIn(storeFilters, producersFilters);
         }
-        return null;
-    }
 
-    private Data getData(int offset, int limit, Sort sort) {
-        Pageable pageable = new OffsetBasedPageRequest(offset, limit, sort);
-        Page<Item> pages = itemRepository.findAll(pageable);
-        int totalCount = (int) itemRepository.count();
         return toItems(pages, totalCount);
     }
 

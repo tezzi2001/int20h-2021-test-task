@@ -1,8 +1,8 @@
 package com.int20h2021.testtask.service;
 
+import com.int20h2021.testtask.domain.json.common.Data;
 import com.int20h2021.testtask.domain.json.common.Filter;
 import com.int20h2021.testtask.domain.json.common.FilterOption;
-import com.int20h2021.testtask.domain.json.common.Data;
 import com.int20h2021.testtask.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,8 +12,7 @@ import org.springframework.util.MultiValueMap;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.int20h2021.testtask.constant.Filter.STORE;
-import static com.int20h2021.testtask.constant.Store.*;
+import static com.int20h2021.testtask.constant.Filters.*;
 
 @Service("buckwheatDataProvidingService")
 @RequiredArgsConstructor
@@ -23,39 +22,34 @@ public class BuckwheatFiltersProvidingService implements BuckwheatDataProvider {
     private final ItemRepository itemRepository;
 
     @Override
-    public Data getData(int offset, int limit, String sortBy, String sortDir) {
-        Data data = buckwheatItemsProvidingService.getData(offset, limit, sortBy, sortDir);
-        addStoreFilterOption(data);
+    public Data getData(int offset, int limit, String sortBy, String sortDir, MultiValueMap<String, String> filters) {
+        Data data = buckwheatItemsProvidingService.getData(offset, limit, sortBy, sortDir, filters);
+
+        data.setFilters(new Filter[] {
+                getStoreFilterOption(),
+                getProducerFilterOption()
+        });
 
         return data;
     }
 
-    @Override
-    public Data getFilteredData(int offset, int limit, String sortBy, String sortDir, MultiValueMap<String, String> filters) {
-        Data data = buckwheatItemsProvidingService.getFilteredData(offset, limit, sortBy, sortDir, filters);
-        addStoreFilterOption(data);
-
-        return data;
+    private Filter getStoreFilterOption() {
+        List<String> stores = itemRepository.findDistinctStores();
+        List<FilterOption> storeFilterOptions = getFilterOptionsOfColumn(stores);
+        return new Filter(STORE.getId(), STORE.getName(), storeFilterOptions.toArray(new FilterOption[0]));
     }
 
-    private void addStoreFilterOption(Data data) {
-        List<FilterOption> filterOptions = new ArrayList<>(5);
-        addFilterOptionIfStoreExists(ECOMARKET, filterOptions);
-        addFilterOptionIfStoreExists(METRO, filterOptions);
-        addFilterOptionIfStoreExists(NOVUS, filterOptions);
-        addFilterOptionIfStoreExists(ASHAN, filterOptions);
-        addFilterOptionIfStoreExists(VARUS, filterOptions);
-        addFilterOptionIfStoreExists(CITYMARKET, filterOptions);
-        addFilterOptionIfStoreExists(MEGAMARKET, filterOptions);
-        addFilterOptionIfStoreExists(FURSHET, filterOptions);
-
-        Filter filter1 = new Filter(STORE, "Магазин", filterOptions.toArray(new FilterOption[0]));
-        data.setFilters(new Filter[]{filter1});
+    private Filter getProducerFilterOption() {
+        List<String> producers = itemRepository.findDistinctProducers();
+        List<FilterOption> producerFilterOptions = getFilterOptionsOfColumn(producers);
+        return new Filter(PRODUCER.getId(), PRODUCER.getName(), producerFilterOptions.toArray(new FilterOption[0]));
     }
 
-    private void addFilterOptionIfStoreExists(String store, List<FilterOption> filterOptions) {
-        if (itemRepository.existsByStore(store)) {
-            filterOptions.add(new FilterOption(store, store));
+    private List<FilterOption> getFilterOptionsOfColumn(List<String> columnValues) {
+        List<FilterOption> storeFilterOptions = new ArrayList<>();
+        for (String value : columnValues) {
+            storeFilterOptions.add(new FilterOption(value, value));
         }
+        return storeFilterOptions;
     }
 }
