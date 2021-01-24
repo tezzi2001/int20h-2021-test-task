@@ -23,8 +23,8 @@ public class ProductsController {
     public Data search(@RequestParam(required = false) String query,
                        @RequestParam(required = false, defaultValue = "0") int offset,
                        @RequestParam(required = false, defaultValue = "20") int limit,
-                       @RequestParam(required = false) String sortBy,
-                       @RequestParam(required = false, defaultValue = "") String sortDir,
+                       @RequestParam(required = false, defaultValue = "price") String sortBy,
+                       @RequestParam(required = false, defaultValue = "asc") String sortDir,
                        @RequestParam MultiValueMap<String, String> filters) {
         deleteNonFilterKeys(filters);
         if (query == null) {

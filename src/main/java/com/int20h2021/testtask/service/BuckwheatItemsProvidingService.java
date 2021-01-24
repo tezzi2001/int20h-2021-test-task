@@ -18,7 +18,7 @@ import static com.int20h2021.testtask.constant.Filters.*;
 @Service("buckwheatItemsProvidingService")
 @RequiredArgsConstructor
 public class BuckwheatItemsProvidingService implements BuckwheatDataProvider {
-    private static final String ASCENDING = "asc"; //by default
+    private static final String ASCENDING = "asc";
     private static final String DESCENDING = "desc";
 
     private final ItemRepository itemRepository;
