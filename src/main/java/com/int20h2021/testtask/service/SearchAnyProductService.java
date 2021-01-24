@@ -1,5 +1,6 @@
 package com.int20h2021.testtask.service;
 
+import com.int20h2021.testtask.constant.store.Stores;
 import com.int20h2021.testtask.domain.json.common.Data;
 import com.int20h2021.testtask.domain.json.common.Item;
 import com.int20h2021.testtask.domain.json.zakaz.ZakazResponse;
@@ -9,20 +10,21 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
-import static com.int20h2021.testtask.constant.Store.*;
+import static com.int20h2021.testtask.constant.Urls.*;
 
 @Service
 @RequiredArgsConstructor
 public class SearchAnyProductService {
     private final RestTemplate restTemplate;
     private final NormalizrJsonService normalizrJsonService;
+    private final Stores stores;
 
     public Data getRozetkaResponse(String query) {
-        ZakazResponse response = restTemplate.getForObject(ZAKAZ_COMMON_REQUEST_URL, ZakazResponse.class, NOVUS_ID, query);
+        ZakazResponse response = restTemplate.getForObject(ZAKAZ_COMMON_REQUEST_URL, ZakazResponse.class, 48215611, query);
         if (response == null || !response.hasPayload()) {
             return new Data(null, 0);
         }
-        List<Item> itemsList = normalizrJsonService.normalize(response, NOVUS);
+        List<Item> itemsList = normalizrJsonService.normalize(response, stores.getStoresMap().get(48215611));
         return toItemsObj(itemsList);
     }
 
