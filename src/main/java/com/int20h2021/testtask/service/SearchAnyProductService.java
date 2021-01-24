@@ -20,7 +20,7 @@ public class SearchAnyProductService {
     public Data getRozetkaResponse(String query) {
         ZakazResponse response = restTemplate.getForObject(ZAKAZ_COMMON_REQUEST_URL, ZakazResponse.class, NOVUS_ID, query);
         if (response == null || !response.hasPayload()) {
-            return new Data(null);
+            return new Data(null, 0);
         }
         List<Item> itemsList = normalizrJsonService.normalize(response, NOVUS);
         return toItemsObj(itemsList);
@@ -28,6 +28,6 @@ public class SearchAnyProductService {
 
     private Data toItemsObj(List<Item> items) {
         Item[] itemsArray = items.toArray(new Item[0]);
-        return new Data(itemsArray);
+        return new Data(itemsArray, 0);
     }
 }

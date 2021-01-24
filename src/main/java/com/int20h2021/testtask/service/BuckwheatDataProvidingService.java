@@ -44,7 +44,8 @@ public class BuckwheatDataProvidingService implements BuckwheatDataProvider {
 
         if (filters.containsKey(STORE)) {
             pages = itemRepository.findByStoreIn(filters.get(STORE), pageable);
-            return toItems(pages);
+            int totalCount = itemRepository.countByStoreIn(filters.get(STORE));
+            return toItems(pages, totalCount);
         }
         return null;
     }
@@ -52,7 +53,8 @@ public class BuckwheatDataProvidingService implements BuckwheatDataProvider {
     private Data getData(int offset, int limit, Sort sort) {
         Pageable pageable = new OffsetBasedPageRequest(offset, limit, sort);
         Page<Item> pages = itemRepository.findAll(pageable);
-        return toItems(pages);
+        int totalCount = (int) itemRepository.count();
+        return toItems(pages, totalCount);
     }
 
     private Sort getSort(String sortBy, String sortDir) {
@@ -71,10 +73,10 @@ public class BuckwheatDataProvidingService implements BuckwheatDataProvider {
         }
     }
 
-    private Data toItems(Iterable<Item> items) {
+    private Data toItems(Iterable<Item> items, int totalCount) {
         List<Item> itemList = new ArrayList<>();
         items.forEach(itemList::add);
         Item[] itemArray = itemList.toArray(new Item[0]);
-        return new Data(itemArray);
+        return new Data(itemArray, totalCount);
     }
 }

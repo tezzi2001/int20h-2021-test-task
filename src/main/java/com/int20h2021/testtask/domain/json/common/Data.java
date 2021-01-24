@@ -9,4 +9,5 @@ import java.io.Serializable;
 public class Data implements Serializable {
     private final Item[] items;
     private Filter[] filters;
+    private final int totalCount;
 }

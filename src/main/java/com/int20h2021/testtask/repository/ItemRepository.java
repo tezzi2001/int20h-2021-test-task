@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findByStoreIn(List<String> store, Pageable pageable);
+    int countByStoreIn(List<String> store);
     boolean existsByStore(String store);
 }
