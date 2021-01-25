@@ -1,5 +1,7 @@
 package com.int20h2021.testtask.domain.json.common.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,12 +23,19 @@ public class Item implements Serializable {
     private float price;
     @ManyToOne
     @JoinColumn(name = "store_id")
+    @JsonIgnore
     private Store store;
     private int weight;
     @ManyToOne
     @JoinColumn(name = "producer_id")
+    @JsonIgnore
     private Producer producer;
     private float pricePerKg;
+
+    @JsonProperty("store")
+    private String storeJson;
+    @JsonProperty("producer")
+    private String producerJson;
 
     public Item(long id, String title, String href, String img, float price, String store, int weight, String producer) {
         weight = parseWeight(weight);
@@ -72,5 +81,11 @@ public class Item implements Serializable {
         } else {
             return (int) ceil(round(weight, -4));
         }
+    }
+
+    // should be deleted in future releases
+    public void parse() {
+        this.storeJson = this.store.getName();
+        this.producerJson = this.producer.getName();
     }
 }

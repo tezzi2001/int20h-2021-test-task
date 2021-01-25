@@ -94,6 +94,7 @@ public class BuckwheatItemsProvidingService implements BuckwheatDataProvider {
     private Data toItems(Iterable<Item> items, int totalCount) {
         List<Item> itemList = new ArrayList<>();
         items.forEach(itemList::add);
+        items.forEach(Item::parse);
         Item[] itemArray = itemList.toArray(new Item[0]);
         return new Data(itemArray, totalCount);
     }
