@@ -2,7 +2,7 @@ package com.int20h2021.testtask.domain.json.zakaz;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.int20h2021.testtask.domain.json.Transformable;
-import com.int20h2021.testtask.domain.json.common.Item;
+import com.int20h2021.testtask.domain.json.common.entity.Item;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

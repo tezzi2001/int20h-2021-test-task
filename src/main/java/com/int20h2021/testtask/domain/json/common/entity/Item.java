@@ -1,11 +1,9 @@
-package com.int20h2021.testtask.domain.json.common;
+package com.int20h2021.testtask.domain.json.common.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import javax.persistence.*;
 import java.io.Serializable;
 
 import static java.lang.Math.ceil;
@@ -13,7 +11,6 @@ import static org.apache.commons.math3.util.Precision.round;
 
 @Data
 @Entity
-@IdClass(ItemPK.class)
 @NoArgsConstructor
 public class Item implements Serializable {
     @Id
@@ -22,10 +19,13 @@ public class Item implements Serializable {
     private String href;
     private String img;
     private float price;
-    @Id
-    private String store;
+    @ManyToOne
+    @JoinColumn(name = "store_id")
+    private Store store;
     private int weight;
-    private String producer;
+    @ManyToOne
+    @JoinColumn(name = "producer_id")
+    private Producer producer;
     private float pricePerKg;
 
     public Item(long id, String title, String href, String img, float price, String store, int weight, String producer) {
@@ -35,19 +35,31 @@ public class Item implements Serializable {
         this.href = href;
         this.img = img;
         this.price = price;
-        this.store = store;
+        this.store = new Store(store);
         this.weight = weight == 0 ? 1000 : weight;
-        this.producer = producer == null ? "Вагова" : producer;
+        this.producer = producer == null ?
+                new Producer("Вагова") :
+                new Producer(producer);
         this.pricePerKg = price / this.weight * 1000;
     }
 
     public void setWeight(int weight) {
         weight = parseWeight(weight);
-        this.weight = weight == 0 ? 1000 : weight;
+        this.weight = weight == 0 ?
+                1000 :
+                weight;
+    }
+
+    public void setProducer(Producer producer) {
+        this.producer = producer.getName() == null ?
+                new Producer("Вагова") :
+                producer;
     }
 
     public void setProducer(String producer) {
-        this.producer = producer == null ? "Вагова" : producer;
+        this.producer = producer == null ?
+                new Producer("Вагова") :
+                new Producer(producer);
     }
 
     private int parseWeight(int weight) {

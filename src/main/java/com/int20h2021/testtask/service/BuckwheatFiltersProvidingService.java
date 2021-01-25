@@ -1,9 +1,11 @@
 package com.int20h2021.testtask.service;
 
+import com.int20h2021.testtask.domain.json.common.entity.Deliverable;
 import com.int20h2021.testtask.domain.json.common.Data;
 import com.int20h2021.testtask.domain.json.common.Filter;
 import com.int20h2021.testtask.domain.json.common.FilterOption;
-import com.int20h2021.testtask.repository.ItemRepository;
+import com.int20h2021.testtask.repository.ProducerRepository;
+import com.int20h2021.testtask.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -20,7 +22,8 @@ import static com.int20h2021.testtask.constant.Filters.STORE;
 public class BuckwheatFiltersProvidingService implements BuckwheatDataProvider {
     @Qualifier("buckwheatItemsProvidingService")
     private final BuckwheatDataProvider buckwheatItemsProvidingService;
-    private final ItemRepository itemRepository;
+    private final ProducerRepository producerRepository;
+    private final StoreRepository storeRepository;
 
     @Override
     public Data getData(int offset, int limit, String sortBy, String sortDir, MultiValueMap<String, String> filters) {
@@ -35,21 +38,32 @@ public class BuckwheatFiltersProvidingService implements BuckwheatDataProvider {
     }
 
     private Filter getStoreFilterOption() {
-        List<String> stores = itemRepository.findDistinctStores();
-        List<FilterOption> storeFilterOptions = getFilterOptionsOfColumn(stores, STORE.getId());
-        return new Filter(STORE.getId(), STORE.getName(), storeFilterOptions.toArray(new FilterOption[0]));
+        List<Deliverable> stores = new ArrayList<>(storeRepository.findAll());
+        List<FilterOption> storeFilterOptions = getFilterOptionsOfColumn(stores);
+        return new Filter(
+                STORE.getId(),
+                STORE.getName(),
+                storeFilterOptions.toArray(new FilterOption[0])
+        );
     }
 
     private Filter getProducerFilterOption() {
-        List<String> producers = itemRepository.findDistinctProducers();
-        List<FilterOption> producerFilterOptions = getFilterOptionsOfColumn(producers, PRODUCER.getId());
-        return new Filter(PRODUCER.getId(), PRODUCER.getName(), producerFilterOptions.toArray(new FilterOption[0]));
+        List<Deliverable> producers = new ArrayList<>(producerRepository.findAll());
+        List<FilterOption> producerFilterOptions = getFilterOptionsOfColumn(producers);
+        return new Filter(
+                PRODUCER.getId(),
+                PRODUCER.getName(),
+                producerFilterOptions.toArray(new FilterOption[0])
+        );
     }
 
-    private List<FilterOption> getFilterOptionsOfColumn(List<String> columnValues, String type) {
+    private List<FilterOption> getFilterOptionsOfColumn(List<Deliverable> deliverables) {
         List<FilterOption> storeFilterOptions = new ArrayList<>();
-        for (String value : columnValues) {
-            storeFilterOptions.add(new FilterOption(value, value, type));
+        for (Deliverable deliverable : deliverables) {
+            storeFilterOptions.add(
+                    new FilterOption(deliverable.getId(),
+                    deliverable.getName()
+            ));
         }
         return storeFilterOptions;
     }

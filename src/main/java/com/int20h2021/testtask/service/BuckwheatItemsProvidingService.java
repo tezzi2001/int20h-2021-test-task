@@ -1,10 +1,13 @@
 package com.int20h2021.testtask.service;
 
 import com.int20h2021.testtask.domain.OffsetBasedPageRequest;
-import com.int20h2021.testtask.domain.json.common.Data;
-import com.int20h2021.testtask.domain.json.common.FilterOption;
-import com.int20h2021.testtask.domain.json.common.Item;
+import com.int20h2021.testtask.domain.json.common.*;
+import com.int20h2021.testtask.domain.json.common.entity.Item;
+import com.int20h2021.testtask.domain.json.common.entity.Producer;
+import com.int20h2021.testtask.domain.json.common.entity.Store;
 import com.int20h2021.testtask.repository.ItemRepository;
+import com.int20h2021.testtask.repository.ProducerRepository;
+import com.int20h2021.testtask.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -24,6 +27,8 @@ public class BuckwheatItemsProvidingService implements BuckwheatDataProvider {
     private static final String ASCENDING = "asc";
     private static final String DESCENDING = "desc";
 
+    private final ProducerRepository producerRepository;
+    private final StoreRepository storeRepository;
     private final ItemRepository itemRepository;
     private final BuckwheatDataUpdateService buckwheatDataUpdateService;
 
@@ -38,20 +43,27 @@ public class BuckwheatItemsProvidingService implements BuckwheatDataProvider {
             pages = itemRepository.findAll(pageable);
             totalCount = (int) itemRepository.count();
         } else {
-            List<String> storeFilters;
-            List<String> producersFilters;
-            String storeId = STORE.getId();
-            String producerId = PRODUCER.getId();
+            List<String> storeFiltersIds;
+            List<String> producersFiltersIds;
+            String storeIdConst = STORE.getId();
+            String producerIdConst = PRODUCER.getId();
 
-            storeFilters = filters.containsKey(storeId) ?
-                    getParsedFilters(filters.get(storeId)) :
-                    itemRepository.findDistinctStores();
-            producersFilters = filters.containsKey(producerId) ?
-                    getParsedFilters(filters.get(producerId)) :
-                    itemRepository.findDistinctProducers();
+            storeFiltersIds = filters.containsKey(storeIdConst) ?
+                    filters.get(storeIdConst) :
+                    storeRepository.findAll().stream().map(Store::getId).collect(Collectors.toList());
+            producersFiltersIds = filters.containsKey(producerIdConst) ?
+                    filters.get(producerIdConst) :
+                    producerRepository.findAll().stream().map(Producer::getId).collect(Collectors.toList());
 
-            pages = itemRepository.findByStoreInAndProducerIn(storeFilters, producersFilters, pageable);
-            totalCount = itemRepository.countByStoreInAndProducerIn(storeFilters, producersFilters);
+            pages = itemRepository.findByStoreInAndProducerIn(
+                    storeRepository.findAllById(storeFiltersIds),
+                    producerRepository.findAllById(producersFiltersIds),
+                    pageable
+            );
+            totalCount = itemRepository.countByStoreIdInAndProducerIdIn(
+                    storeFiltersIds,
+                    producersFiltersIds
+            );
         }
 
         return toItems(pages, totalCount);
@@ -61,12 +73,6 @@ public class BuckwheatItemsProvidingService implements BuckwheatDataProvider {
         if (buckwheatDataUpdateService.needForUpdate()) {
             buckwheatDataUpdateService.update();
         }
-    }
-
-    private List<String> getParsedFilters(List<String> filters) {
-        return filters.stream()
-                .map(f -> f.split(FilterOption.DELIMITER)[0])
-                .collect(Collectors.toList());
     }
 
     private Sort getSort(String sortBy, String sortDir) {
