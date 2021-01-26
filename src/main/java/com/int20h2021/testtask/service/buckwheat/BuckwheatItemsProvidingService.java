@@ -37,10 +37,26 @@ public class BuckwheatItemsProvidingService implements BuckwheatDataProvider {
     @Override
     public Data getData(int offset, int limit, String sortBy, String sortDir, MultiValueMap<String, String> filters) {
         checkForUpdate();
-        Pageable pageable = new OffsetBasedPageRequest(offset, limit, getSort(sortBy, sortDir));
-        Pages pages = filters.isEmpty() ?
+
+        Pageable pageable;
+        Pages pages;
+
+        // Fix issue with filters and pagination. Should be removed in future releases
+        if (offset != 0) {
+            pageable = new OffsetBasedPageRequest(0, offset, getSort(sortBy, sortDir));
+            pages = getPagesByFilters(pageable, filters);
+            if (pages.totalCount <= offset) {
+                pageable = new OffsetBasedPageRequest(0, pages.totalCount, getSort(sortBy, sortDir));
+                pages = getPagesByFilters(pageable, filters);
+                return toData(pages.pages, pages.totalCount);
+            }
+        }
+
+        pageable = new OffsetBasedPageRequest(offset, limit, getSort(sortBy, sortDir));
+        pages = filters.isEmpty() ?
                 getAllPages(pageable) :
                 getPagesByFilters(pageable, filters);
+
 
         return toData(pages.pages, pages.totalCount);
     }
