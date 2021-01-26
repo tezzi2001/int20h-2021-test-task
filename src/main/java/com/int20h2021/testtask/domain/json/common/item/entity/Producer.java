@@ -1,11 +1,14 @@
-package com.int20h2021.testtask.domain.json.common.entity;
+package com.int20h2021.testtask.domain.json.common.item.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ibm.icu.text.Transliterator;
+import com.int20h2021.testtask.domain.entity.Item;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -14,6 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class Producer implements Deliverable, Serializable {
     private static final Transliterator TRANSLITERATOR = Transliterator.getInstance("Russian-Latin/BGN");
+
     @Id
     private String id;
     private String name;

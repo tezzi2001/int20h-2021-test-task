@@ -1,4 +1,4 @@
-package com.int20h2021.testtask.domain.json.common;
+package com.int20h2021.testtask.domain.json.common.item;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

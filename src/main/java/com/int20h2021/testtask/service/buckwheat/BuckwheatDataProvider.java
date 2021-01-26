@@ -1,6 +1,6 @@
-package com.int20h2021.testtask.service;
+package com.int20h2021.testtask.service.buckwheat;
 
-import com.int20h2021.testtask.domain.json.common.Data;
+import com.int20h2021.testtask.domain.json.common.item.Data;
 import org.springframework.util.MultiValueMap;
 
 public interface BuckwheatDataProvider {

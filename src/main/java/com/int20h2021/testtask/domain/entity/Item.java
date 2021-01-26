@@ -1,11 +1,17 @@
-package com.int20h2021.testtask.domain.json.common.entity;
+package com.int20h2021.testtask.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.int20h2021.testtask.domain.json.common.item.ItemJson;
+import com.int20h2021.testtask.domain.json.common.item.entity.Producer;
+import com.int20h2021.testtask.domain.json.common.item.entity.Store;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.io.Serializable;
 
 import static java.lang.Math.ceil;
@@ -15,6 +21,7 @@ import static org.apache.commons.math3.util.Precision.round;
 @Entity
 @NoArgsConstructor
 public class Item implements Serializable {
+    private static final String GRAVIMETRIC = "Вагова";
     @Id
     private long id;
     private String title;
@@ -47,7 +54,7 @@ public class Item implements Serializable {
         this.store = new Store(store);
         this.weight = weight == 0 ? 1000 : weight;
         this.producer = producer == null ?
-                new Producer("Вагова") :
+                new Producer(GRAVIMETRIC) :
                 new Producer(producer);
         this.pricePerKg = price / this.weight * 1000;
     }
@@ -61,13 +68,13 @@ public class Item implements Serializable {
 
     public void setProducer(Producer producer) {
         this.producer = producer.getName() == null ?
-                new Producer("Вагова") :
+                new Producer(GRAVIMETRIC) :
                 producer;
     }
 
     public void setProducer(String producer) {
         this.producer = producer == null ?
-                new Producer("Вагова") :
+                new Producer(GRAVIMETRIC) :
                 new Producer(producer);
     }
 
@@ -83,9 +90,7 @@ public class Item implements Serializable {
         }
     }
 
-    // should be deleted in future releases
-    public void parse() {
-        this.storeJson = this.store.getName();
-        this.producerJson = this.producer.getName();
+    public ItemJson toJson() {
+        return new ItemJson(id, title, href, img, price, weight, pricePerKg, store.getName(), producer.getName());
     }
 }

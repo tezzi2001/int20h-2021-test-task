@@ -1,7 +1,7 @@
 package com.int20h2021.testtask.service;
 
+import com.int20h2021.testtask.domain.entity.Item;
 import com.int20h2021.testtask.domain.json.Transformable;
-import com.int20h2021.testtask.domain.json.common.entity.Item;
 import com.int20h2021.testtask.domain.json.zakaz.ZakazResponse;
 import org.springframework.stereotype.Service;
 

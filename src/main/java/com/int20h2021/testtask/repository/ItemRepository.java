@@ -1,8 +1,8 @@
 package com.int20h2021.testtask.repository;
 
-import com.int20h2021.testtask.domain.json.common.entity.Item;
-import com.int20h2021.testtask.domain.json.common.entity.Producer;
-import com.int20h2021.testtask.domain.json.common.entity.Store;
+import com.int20h2021.testtask.domain.entity.Item;
+import com.int20h2021.testtask.domain.json.common.item.entity.Producer;
+import com.int20h2021.testtask.domain.json.common.item.entity.Store;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

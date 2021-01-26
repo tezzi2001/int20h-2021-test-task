@@ -1,4 +1,4 @@
-package com.int20h2021.testtask.service;
+package com.int20h2021.testtask.service.buckwheat;
 
 import com.int20h2021.testtask.domain.json.common.chart.entity.PriceChart;
 import com.int20h2021.testtask.repository.PriceChartRepository;

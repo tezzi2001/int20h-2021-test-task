@@ -1,9 +1,9 @@
-package com.int20h2021.testtask.service;
+package com.int20h2021.testtask.service.buckwheat;
 
-import com.int20h2021.testtask.domain.json.common.entity.Deliverable;
-import com.int20h2021.testtask.domain.json.common.Data;
-import com.int20h2021.testtask.domain.json.common.Filter;
-import com.int20h2021.testtask.domain.json.common.FilterOption;
+import com.int20h2021.testtask.domain.json.common.item.Data;
+import com.int20h2021.testtask.domain.json.common.item.Filter;
+import com.int20h2021.testtask.domain.json.common.item.FilterOption;
+import com.int20h2021.testtask.domain.json.common.item.entity.Deliverable;
 import com.int20h2021.testtask.repository.ProducerRepository;
 import com.int20h2021.testtask.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;

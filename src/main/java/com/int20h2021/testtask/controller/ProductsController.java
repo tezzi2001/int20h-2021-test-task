@@ -1,11 +1,11 @@
 package com.int20h2021.testtask.controller;
 
-import com.int20h2021.testtask.domain.json.common.Data;
 import com.int20h2021.testtask.domain.json.common.chart.ChartData;
 import com.int20h2021.testtask.domain.json.common.chart.entity.PriceChart;
-import com.int20h2021.testtask.service.BuckwheatChartService;
-import com.int20h2021.testtask.service.BuckwheatDataProvider;
+import com.int20h2021.testtask.domain.json.common.item.Data;
 import com.int20h2021.testtask.service.SearchAnyProductService;
+import com.int20h2021.testtask.service.buckwheat.BuckwheatChartService;
+import com.int20h2021.testtask.service.buckwheat.BuckwheatDataProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.MultiValueMap;
