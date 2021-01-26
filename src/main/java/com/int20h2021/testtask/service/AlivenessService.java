@@ -20,7 +20,7 @@ public class AlivenessService {
 
     public AlivenessService(RestTemplate restTemplate) {
         this.scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-        this.scheduledExecutorService.scheduleAtFixedRate(this::wakeUp, 0, 25, TimeUnit.SECONDS);
+        this.scheduledExecutorService.scheduleAtFixedRate(this::wakeUp, 0, 25, TimeUnit.MINUTES);
         this.restTemplate = restTemplate;
     }
 
