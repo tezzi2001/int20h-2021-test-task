@@ -32,12 +32,13 @@ public class ProductsController {
                        @RequestParam(required = false, defaultValue = "20") int limit,
                        @RequestParam(required = false, defaultValue = "price") String sortBy,
                        @RequestParam(required = false, defaultValue = "asc") String sortDir,
+                       @RequestParam(required = false, defaultValue = "48215611") int storeId,
                        @RequestParam MultiValueMap<String, String> filters) {
         deleteNonFilterKeys(filters);
         if (query == null) {
             return buckwheatDataProvidingService.getData(offset, limit, sortBy, sortDir, filters);
         } else {
-            return searchAnyProductService.getRozetkaResponse(query);
+            return searchAnyProductService.getData(query, offset, limit, sortBy, sortDir, filters, storeId);
         }
     }
 
@@ -64,5 +65,6 @@ public class ProductsController {
         filters.remove("limit");
         filters.remove("sortBy");
         filters.remove("sortDir");
+        filters.remove("storeId");
     }
 }
