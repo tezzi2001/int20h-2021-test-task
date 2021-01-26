@@ -16,4 +16,9 @@ public class ServiceController {
     public boolean collectData() {
         return buckwheatDataCollectionService.collect();
     }
+
+    // Stub method for waking up
+    @GetMapping("/wake-up-poll")
+    public void pollToWakeUp() {
+    }
 }
